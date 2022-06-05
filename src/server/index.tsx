@@ -1,11 +1,16 @@
 import express from 'express';
+import { renderToString } from 'react-dom/server';
+import App from '../common/App';
+
 
 const port = process.env.PORT || 2000;
 
 const server = express();
 
 server.get('/', (req, resp) => {
-  resp.send(`<h1>hello</h1>`);
+  const appHtml = renderToString(<App />);
+  
+  resp.send(appHtml);
 });
 
 server.listen(port, () => {

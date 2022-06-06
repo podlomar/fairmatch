@@ -1,5 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { StatsWriterPlugin } = require("webpack-stats-plugin");
 const json5 = require('json5');
 
@@ -34,8 +35,30 @@ const serverConfig = {
           },
         },
       },
+      {
+        test: /\.s?css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+          // {
+          //   loader: 'sass-resources-loader',
+          //   options: {
+          //     resources: [
+          //       'src/server/resources/vars.scss',
+          //       'src/server/resources/mixins.scss',
+          //     ],
+          //   },
+          // },
+        ],
+      },
     ],
   },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'assets/style.css',
+    }),
+  ]
 };
 
 const clientConfig = {

@@ -8,6 +8,7 @@ const port = process.env.PORT || 2000;
 
 const server = express();
 
+server.use('/assets', express.static('./assets', { fallthrough: false }));
 server.use('/js', express.static('./js', { fallthrough: false }));
 
 server.get('*', async (req, resp) => {

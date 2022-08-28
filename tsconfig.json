@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "module": "commonjs",
+    "target": "es2021",
+    "module": "esnext",
     "jsx": "react-jsx",
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   }

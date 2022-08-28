@@ -5,13 +5,13 @@ const App = () => {
   const queryClient = useQueryClient();
   const greet = queryClient.getQueryData<string>('greet');
   return (
-    <div className="layout">
-      <div className="layout__left">
-        <h1>FairMatch</h1>
-      </div>
-      <div className="layout__right">
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni optio rem sint autem aperiam nemo. Possimus, quaerat! Culpa, necessitatibus architecto!</p>
-      </div>
+    <div className="container-sm">
+      <h1>FairMatch</h1>
+      <form action="/startEvent" method="post" encType="multipart/form-data">
+        <p>Upload an event definition file to start a new matching event.</p>
+        <label>Definition file: <input type="file" id="defFile" name="defFile" /></label>
+        <button type="submit">Start event</button>
+      </form>
     </div>
   );
 };

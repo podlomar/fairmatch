@@ -1,8 +1,7 @@
 import { readFileSync } from 'fs'; 
-import json5 from 'json5';
 import { DehydratedState } from 'react-query';
 
-const stats = json5.parse(readFileSync('./stats.json5', 'utf-8'));
+const stats = JSON.parse(readFileSync('./stats.json', 'utf-8'));
 
 export const renderHtml = (app: string, dehydratedState: DehydratedState): string => {
   return `

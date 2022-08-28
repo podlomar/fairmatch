@@ -1,18 +1,22 @@
-const path = require('path');
-const nodeExternals = require('webpack-node-externals');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { StatsWriterPlugin } = require("webpack-stats-plugin");
-const json5 = require('json5');
+import path from 'path';
+import { fileURLToPath } from "url";
+import nodeExternals from 'webpack-node-externals';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { StatsWriterPlugin } from 'webpack-stats-plugin';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const serverConfig = {
   entry: './src/server/index.tsx',
   mode: 'development',
-  target: 'node',
+  target: 'es2021',
   devtool: false,
   output: {
     path: path.resolve('./dist'),
     filename: 'server.js',
     publicPath: '/',
+    module: true,
+    chunkFormat: 'module',
   },
   resolve: {
     modules: [
@@ -22,8 +26,14 @@ const serverConfig = {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   externals: [
-    nodeExternals(),
+    nodeExternals({
+      importType: 'module',
+    }),
   ],
+  externalsPresets: { node: true },
+  experiments: {
+    outputModule: true,
+  },
   module: {
     rules: [
       {
@@ -97,9 +107,9 @@ const clientConfig = {
   },
   plugins: [
     new StatsWriterPlugin({
-      filename: 'stats.json5',
+      filename: 'stats.json',
       transform(data) {
-        return json5.stringify({
+        return JSON.stringify({
           bundle: data.assetsByChunkName.main[0],
         }, null, 2);
       },
@@ -107,4 +117,4 @@ const clientConfig = {
   ],
 };
 
-module.exports = [clientConfig, serverConfig];
+export default [clientConfig, serverConfig];

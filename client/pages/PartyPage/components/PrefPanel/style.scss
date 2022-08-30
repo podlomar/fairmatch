@@ -1,0 +1,25 @@
+.pref-panel {
+  padding: 0.5rem;
+  display: flex;
+  background-color: #43b1c7;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  height: 3rem;
+  overflow: hidden;
+  user-select: none;
+  line-height: 1rem;
+  text-align: center;
+
+  &__icon {
+    background-image: url(./img/person.svg);
+    background-size: contain;
+    width: 2rem;
+    height: 2rem;
+    font-weight: bold;
+    font-size: 80%;
+  }
+
+  &__name {
+    padding: 0.5rem;
+  }
+}

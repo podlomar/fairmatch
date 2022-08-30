@@ -1,6 +1,7 @@
 import collect from 'collect.js';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
+import type { MatchingEvent, EventSide, Party, PartyPref } from '../common/event';
 
 const EventSideSchema = z.object({
   name: z.string(),
@@ -15,30 +16,6 @@ export const MatchingEventDefSchema = z.object({
 });
 
 export type MatchingEventDef = z.infer<typeof MatchingEventDefSchema>;
-
-export interface PartyPref {
-  index: number,
-  name: string,
-}
-
-export interface Party {
-  id: string,
-  name: string,
-  prefs: PartyPref[],
-}
-
-export interface EventSide {
-  name: string,
-  parties: Party[],
-}
-
-export interface MatchingEvent {
-  id: string,
-  eventName: string,
-  size: number,
-  sideA: EventSide,
-  sideB: EventSide,
-}
 
 const prefFromPartyNames = (names: string[]): PartyPref[] => {
   const prefs = names.map((name, index): PartyPref => ({ name, index }));

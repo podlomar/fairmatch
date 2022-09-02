@@ -7,3 +7,20 @@
 body {
   background-color: white;
 }
+
+.brand {
+  display: flex;
+  align-items: center;
+
+  &__icon {
+    width: 3rem;
+    height: 3rem;
+    background-image: url(./img//logo.svg);
+    background-size: contain;
+  }
+
+  &__name {
+    margin: 0 0 0 1rem;
+    font-size: 2rem;
+  }
+}

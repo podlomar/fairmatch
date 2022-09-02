@@ -9,7 +9,13 @@ const App = () => {
   return (
     <>
       <header className="container-sm">
-        <h1>FairMatch</h1>
+        <div className="brand">
+          <div className="brand__icon">
+
+          </div>
+          <h1 className="brand__name">FairMatch</h1>
+        </div>
+        
       </header>
       <BrowserRouter>
         <Routes>

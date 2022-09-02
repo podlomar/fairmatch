@@ -65,9 +65,9 @@ server.post('/api/events/:eventId/actions', async (req, resp) => {
 
   await dbEvent.populate('blueSide.parties');
   await dbEvent.populate('pinkSide.parties');
+  const event = dbEvent.toObject();
 
-  if (req.body.type === 'find-pairings') {
-    const event = dbEvent.toObject();
+  if (req.body.type === 'find-pairings') {  
     console.log(event);
     const instance = matchingInstanceFromEvent(event);
 
@@ -84,12 +84,17 @@ server.post('/api/events/:eventId/actions', async (req, resp) => {
 
   if (req.body.type === 'select-solution') {
     const selectedSolution = req.body.index as number;
+    const solution = event.solutions[selectedSolution];
 
-    dbEvent.set('selectedSolution', selectedSolution);
+    dbEvent.selectedSolution = selectedSolution;
+    
+    solution.pairs.forEach((p, b) => {
+      dbEvent.blueSide.parties[b].selectedPref = p;
+      dbEvent.pinkSide.parties[p].selectedPref = b;
+    });
+    
     await dbEvent.save();
-  
-    const event = dbEvent.toObject();
-    resp.send(event);
+    resp.send(dbEvent.toObject());
     return;
   }
 });

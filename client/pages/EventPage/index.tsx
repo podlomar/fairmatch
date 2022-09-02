@@ -28,6 +28,18 @@ const EventPage = () => {
     )).json() as MatchingEvent);
   }
 
+  const handleSelectSolution = async (index: number) => {
+    setEvent(await (
+      await fetch(`/api/events/${eventId}/actions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ type: 'select-solution', index }),
+      }
+    )).json() as MatchingEvent);
+  }
+
   return (
     <main className="container-sm">
       { event === 'loading' ? (
@@ -39,12 +51,11 @@ const EventPage = () => {
             <div className="col">
               {
                 event.blueSide.parties.map((party) => (
-                  <div className="party-panel">
-                    <div className="party-panel--icon" />
-                    <div className="party-panel--name">
+                  <div className="party-panel party-panel--blue">
+                    <div className="party-panel__name">
                       <div>{ party.name } { party.status === 'finalized' ? 'done' : null } </div>
-                      <Link to={`/parties/${party.uid}`}>{`${window.location.origin}/parties/${party.uid}`}</Link>
                     </div>
+                    <div className="party-panel__icon" />
                   </div>
                 ))
               }
@@ -53,12 +64,11 @@ const EventPage = () => {
             <div className="col">
               {
                 event.pinkSide.parties.map((party) => (
-                  <div className="party-panel">
-                    <div className="party-panel--icon" />
-                    <div className="party-panel--name">
+                  <div className="party-panel party-panel--pink">
+                    <div className="party-panel__name">
                       <div>{ party.name } { party.status === 'finalized' ? 'done' : null } </div>
-                      <Link to={`/parties/${party.uid}`}>{`${window.location.origin}/parties/${party.uid}`}</Link>
                     </div>
+                    <div className="party-panel__icon" />
                   </div>
                 ))
               }
@@ -67,12 +77,12 @@ const EventPage = () => {
           <button onClick={handleComputePairings}>Pairings</button>
           <div>
             {
-              event.solutions.map((solution) => (
+              event.solutions.map((solution, idx) => (
                 <div>
                   { solution.scoreA }
                   { solution.totalScore }
                   { solution.scoreB }
-                  <button>select</button>
+                  <button onClick={() => handleSelectSolution(idx)}>select</button>
                 </div>
               ))
             }

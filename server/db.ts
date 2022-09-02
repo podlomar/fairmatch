@@ -11,6 +11,7 @@ export const PartySchema = new mongoose.Schema<Party>({
   name: { type: String, required: true },
   status: { type: String, required: true },
   prefs: { type: [PartyPrefSchema], required: true },
+  selectedPref: { type: Number },
 });
 
 export const EventSideSchema = new mongoose.Schema<EventSide>({

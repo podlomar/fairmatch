@@ -8,6 +8,7 @@ export interface Party {
   name: string,
   status: 'in-progress' | 'finalized';
   prefs: PartyPref[],
+  selectedPref?: number,
 }
 
 export interface EventSide {

@@ -1,28 +1,46 @@
 .party-panel {
-  padding: 0.5rem;
   display: flex;
-  background-color: #91d1de;
+  justify-items: flex-end;
   border-radius: 0.5rem;
   margin-bottom: 0.5rem;
-  height: 3rem;
   overflow: hidden;
   user-select: none;
   line-height: 1rem;
-  text-align: center;
 
-  &--locked {
-    background-color: #eee;
+  &--blue {
+    flex-direction: row;
+  }
+
+  &--pink {
+    flex-direction: row-reverse;
   }
 
   &__icon {
     background-size: contain;
+    background-image: url(../../img/person.svg);
     width: 2rem;
     height: 2rem;
-    font-weight: bold;
-    font-size: 80%;
+    border-radius: 0.5rem;
+  }
+
+  &--blue &__icon {
+    background-color: #91d1de;
+  }
+
+  &--pink &__icon {
+    background-color: #f6cecb;
   }
 
   &__name {
+    flex: 1;
     padding: 0.5rem;
+  }
+
+  &--blue &__name {
+    text-align: right;
+  }
+
+  &--pink &__name {
+    text-align: left;
   }
 }

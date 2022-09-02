@@ -4,8 +4,9 @@ export interface PartyPref {
 }
 
 export interface Party {
-  id: string,
+  uid: string,
   name: string,
+  status: 'in-progress' | 'finalized';
   prefs: PartyPref[],
 }
 
@@ -14,10 +15,23 @@ export interface EventSide {
   parties: Party[],
 }
 
+export interface PairingSolution {
+  pairs: number[],
+  scoreA: number,
+  scoreB: number,
+  totalScore: number,
+  spread: number,
+  viable: boolean,
+  elitist: boolean,
+  egaletarian: boolean,
+}
+
 export interface MatchingEvent {
-  id: string,
+  uid: string,
   eventName: string,
   size: number,
-  sideA: EventSide,
-  sideB: EventSide,
+  blueSide: EventSide,
+  pinkSide: EventSide,
+  solutions: PairingSolution[],
+  selectedSolution?: number,
 }

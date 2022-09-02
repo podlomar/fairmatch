@@ -31,9 +31,9 @@ const HomePage = () => {
         },
         body: JSON.stringify(eventDef),
       });
-      const json = await response.json() as MatchingEvent;
-      console.log(json);
-      navigate(`/events/${json.id}`);
+      const eventId = await response.json() as string;
+      console.log(eventId);
+      navigate(`/events/${eventId}`);
     };
   }
 

@@ -1,7 +1,28 @@
-.event-panel {
-  background-color: white;
-  border-radius: 5px;
-  box-shadow: 0px 0px 4px #999;
-  padding: 1rem;
-  margin-bottom: 1rem;
+.party-panel {
+  padding: 0.5rem;
+  display: flex;
+  background-color: #91d1de;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  height: 3rem;
+  overflow: hidden;
+  user-select: none;
+  line-height: 1rem;
+  text-align: center;
+
+  &--locked {
+    background-color: #eee;
+  }
+
+  &__icon {
+    background-size: contain;
+    width: 2rem;
+    height: 2rem;
+    font-weight: bold;
+    font-size: 80%;
+  }
+
+  &__name {
+    padding: 0.5rem;
+  }
 }

@@ -1,284 +1,13 @@
 import express from 'express';
 import { createEventFromDef, MatchingEventDefSchema } from './event.js';
-import type { MatchingEvent } from '../common/event';
+import mongoose from 'mongoose';
+import { MatchingEventModel, PartyModel, saveEvent } from './db.js';
+import { PartyPref } from '../common/event.js';
+import { buildSolutions, matchingInstanceFromEvent } from './matching.js';
+import { StablePairings } from 'stable-marriages';
+import { eventFromInstance, sample } from './event-gen.js';
 
-const events: MatchingEvent[] = [
-  {
-    "id": "0x0-gO1R",
-    "eventName": "Test Matching 1",
-    "size": 5,
-    "sideA": {
-      "name": "Men",
-      "parties": [
-        {
-          "id": "YqL8v3",
-          "name": "Paul",
-          "prefs": [
-            {
-              "name": "Susan",
-              "index": 0
-            },
-            {
-              "name": "Evelyn",
-              "index": 1
-            },
-            {
-              "name": "Abigail",
-              "index": 4
-            },
-            {
-              "name": "Camila",
-              "index": 2
-            },
-            {
-              "name": "Michelle",
-              "index": 3
-            }
-          ]
-        },
-        {
-          "id": "OgOnR7",
-          "name": "Raymond",
-          "prefs": [
-            {
-              "name": "Michelle",
-              "index": 3
-            },
-            {
-              "name": "Abigail",
-              "index": 4
-            },
-            {
-              "name": "Evelyn",
-              "index": 1
-            },
-            {
-              "name": "Camila",
-              "index": 2
-            },
-            {
-              "name": "Susan",
-              "index": 0
-            }
-          ]
-        },
-        {
-          "id": "5hRNCt",
-          "name": "Charles",
-          "prefs": [
-            {
-              "name": "Abigail",
-              "index": 4
-            },
-            {
-              "name": "Michelle",
-              "index": 3
-            },
-            {
-              "name": "Camila",
-              "index": 2
-            },
-            {
-              "name": "Evelyn",
-              "index": 1
-            },
-            {
-              "name": "Susan",
-              "index": 0
-            }
-          ]
-        },
-        {
-          "id": "Fw-K6J",
-          "name": "Nathan",
-          "prefs": [
-            {
-              "name": "Susan",
-              "index": 0
-            },
-            {
-              "name": "Abigail",
-              "index": 4
-            },
-            {
-              "name": "Michelle",
-              "index": 3
-            },
-            {
-              "name": "Camila",
-              "index": 2
-            },
-            {
-              "name": "Evelyn",
-              "index": 1
-            }
-          ]
-        },
-        {
-          "id": "JkF-kG",
-          "name": "Matthew",
-          "prefs": [
-            {
-              "name": "Michelle",
-              "index": 3
-            },
-            {
-              "name": "Evelyn",
-              "index": 1
-            },
-            {
-              "name": "Susan",
-              "index": 0
-            },
-            {
-              "name": "Abigail",
-              "index": 4
-            },
-            {
-              "name": "Camila",
-              "index": 2
-            }
-          ]
-        }
-      ]
-    },
-    "sideB": {
-      "name": "Women",
-      "parties": [
-        {
-          "id": "bP_-SV",
-          "name": "Susan",
-          "prefs": [
-            {
-              "name": "Paul",
-              "index": 0
-            },
-            {
-              "name": "Raymond",
-              "index": 1
-            },
-            {
-              "name": "Charles",
-              "index": 2
-            },
-            {
-              "name": "Matthew",
-              "index": 4
-            },
-            {
-              "name": "Nathan",
-              "index": 3
-            }
-          ]
-        },
-        {
-          "id": "VJlWJd",
-          "name": "Evelyn",
-          "prefs": [
-            {
-              "name": "Paul",
-              "index": 0
-            },
-            {
-              "name": "Nathan",
-              "index": 3
-            },
-            {
-              "name": "Raymond",
-              "index": 1
-            },
-            {
-              "name": "Matthew",
-              "index": 4
-            },
-            {
-              "name": "Charles",
-              "index": 2
-            }
-          ]
-        },
-        {
-          "id": "04Rfl-",
-          "name": "Camila",
-          "prefs": [
-            {
-              "name": "Matthew",
-              "index": 4
-            },
-            {
-              "name": "Charles",
-              "index": 2
-            },
-            {
-              "name": "Raymond",
-              "index": 1
-            },
-            {
-              "name": "Nathan",
-              "index": 3
-            },
-            {
-              "name": "Paul",
-              "index": 0
-            }
-          ]
-        },
-        {
-          "id": "ZAdHK5",
-          "name": "Michelle",
-          "prefs": [
-            {
-              "name": "Nathan",
-              "index": 3
-            },
-            {
-              "name": "Matthew",
-              "index": 4
-            },
-            {
-              "name": "Paul",
-              "index": 0
-            },
-            {
-              "name": "Charles",
-              "index": 2
-            },
-            {
-              "name": "Raymond",
-              "index": 1
-            }
-          ]
-        },
-        {
-          "id": "a0bLWD",
-          "name": "Abigail",
-          "prefs": [
-            {
-              "name": "Raymond",
-              "index": 1
-            },
-            {
-              "name": "Matthew",
-              "index": 4
-            },
-            {
-              "name": "Charles",
-              "index": 2
-            },
-            {
-              "name": "Paul",
-              "index": 0
-            },
-            {
-              "name": "Nathan",
-              "index": 3
-            }
-          ]
-        }
-      ]
-    }
-  }
-];
+await mongoose.connect('mongodb://localhost:27017/fairmatchdb');
 
 const port = process.env.PORT || 2000;
 
@@ -300,44 +29,124 @@ server.post('/api/startEvent', async (req, resp) => {
     return;
   }
 
-  const event = createEventFromDef(parsed.data);
-  events.push(event);
-  resp.send(event);
+  const event = await createEventFromDef(parsed.data);
+  await saveEvent(event);
+  resp.send(JSON.stringify(event.uid));
 });
 
-server.get('/api/event/:id', async (req, resp) => {
-  const { id } = req.params;
-  const event = events.find((e) => e.id === id);
-  
-  if (event === undefined) {
-    resp.sendStatus(404);
-    return;
-  }
-
-  console.log(JSON.stringify(event, null, 2));
-  resp.send(event);
+server.post('/api/testEvent', async (req, resp) => {
+  const event = eventFromInstance("Testing", sample);
+  await saveEvent(event);
+  resp.send(JSON.stringify(event.uid));
 });
 
-server.get('/api/event/:eventId/party/:partyId', async (req, resp) => {
-  const { eventId, partyId } = req.params;
-  const event = events.find((e) => e.id === eventId);
+server.get('/api/events/:eventId', async (req, resp) => {
+  const { eventId } = req.params;
+  const dbEvent = await MatchingEventModel.findOne({ uid: eventId });
   
-  if (event === undefined) {
+  if (dbEvent === null) {
     resp.sendStatus(404);
     return;
   }
 
-  const party = (
-    event.sideA.parties.find((p) => p.id === partyId) ??
-    event.sideB.parties.find((p) => p.id === partyId)
-  );
+  await dbEvent.populate('blueSide.parties');
+  await dbEvent.populate('pinkSide.parties');
+  resp.send(dbEvent.toObject());
+});
+
+server.post('/api/events/:eventId/actions', async (req, resp) => {
+  const { eventId } = req.params;
+  const dbEvent = await MatchingEventModel.findOne({ uid: eventId });
   
-  if (party === undefined) {
+  if (dbEvent === null) {
     resp.sendStatus(404);
     return;
   }
 
+  await dbEvent.populate('blueSide.parties');
+  await dbEvent.populate('pinkSide.parties');
+
+  if (req.body.type === 'find-pairings') {
+    const event = dbEvent.toObject();
+    console.log(event);
+    const instance = matchingInstanceFromEvent(event);
+
+    console.log(instance);
+
+    const pairings = new StablePairings(instance).computeStablePairings();
+    const solutions = buildSolutions(pairings);
+    dbEvent.set('solutions', solutions);
+    await dbEvent.save();
+
+    resp.send(dbEvent.toObject());
+    return;
+  }
+
+  if (req.body.type === 'select-solution') {
+    const selectedSolution = req.body.index as number;
+
+    dbEvent.set('selectedSolution', selectedSolution);
+    await dbEvent.save();
+  
+    const event = dbEvent.toObject();
+    resp.send(event);
+    return;
+  }
+});
+
+server.post('/api/events/:eventId', async (req, resp) => {
+  const { eventId } = req.params;
+  const dbEvent = await MatchingEventModel.findOne({ uid: eventId });
+  
+  if (dbEvent === null) {
+    resp.sendStatus(404);
+    return;
+  }
+  
+  
+});
+
+server.get('/api/parties/:partyId', async (req, resp) => {
+  const { partyId } = req.params;
+  const dbParty = await PartyModel.findOne({ uid: partyId });
+  
+  if (dbParty === null) {
+    resp.sendStatus(404);
+    return;
+  }
+
+  const party = dbParty.toObject();
   resp.send(party);
+});
+
+server.post('/api/parties/:partyId/prefs', async (req, resp) => {
+  const { partyId } = req.params;
+  const newPrefs = req.body as PartyPref[];
+
+  const dbParty = await PartyModel.findOne({ uid: partyId });
+  
+  if (dbParty === null) {
+    resp.sendStatus(404);
+    return;
+  }
+
+  await dbParty.update({ prefs: newPrefs });
+  resp.sendStatus(200);
+});
+
+server.post('/api/parties/:partyId/finalize', async (req, resp) => {
+  const { partyId } = req.params;
+
+  const dbParty = await PartyModel.findOne({ uid: partyId });
+  
+  if (dbParty === null) {
+    resp.sendStatus(404);
+    return;
+  }
+
+  dbParty.set('status', 'finalized');
+  await dbParty.save();
+  resp.send(dbParty.toObject());
 });
 
 server.get('*', (req, resp) => {

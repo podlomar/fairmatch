@@ -11,8 +11,8 @@ const EventSideSchema = z.object({
 export const MatchingEventDefSchema = z.object({
   eventName: z.string(),
   size: z.number(),
-  sideA: EventSideSchema,
-  sideB: EventSideSchema,
+  blueSide: EventSideSchema,
+  pinkSide: EventSideSchema,
 });
 
 export type MatchingEventDef = z.infer<typeof MatchingEventDefSchema>;
@@ -22,31 +22,37 @@ const prefFromPartyNames = (names: string[]): PartyPref[] => {
   return collect(prefs).shuffle().all();
 }
 
-export const createEventFromDef = (def: MatchingEventDef): MatchingEvent => {
-  const range = new Array(def.size).fill(null);
-  const sideA: EventSide = {
-    name: def.sideA.name,
-    parties: def.sideA.parties.map((partyName): Party => ({
-      id: nanoid(6),
+export const createEventFromDef = async (def: MatchingEventDef): Promise<MatchingEvent> => {
+  const blueSideParties = def.blueSide.parties.map(
+    (partyName: string): Party => ({
+      uid: nanoid(),
       name: partyName,
-      prefs: prefFromPartyNames(def.sideB.parties),
-    })),
-  };
-  
-  const sideB: EventSide = {
-    name: def.sideB.name,
-    parties: def.sideB.parties.map((partyName): Party => ({
-      id: nanoid(6),
-      name: partyName,
-      prefs: prefFromPartyNames(def.sideA.parties),
-    })),
-  };
+      status: 'in-progress',
+      prefs: prefFromPartyNames(def.pinkSide.parties)
+    })
+  );
 
-  return { 
-    id: nanoid(8),
+  const pinkSideParties = def.pinkSide.parties.map(
+    (partyName: string): Party => ({
+      uid: nanoid(),
+      name: partyName,
+      status: 'in-progress',
+      prefs: prefFromPartyNames(def.blueSide.parties)
+    })
+  );
+
+  return {
+    uid: nanoid(),
     eventName: def.eventName,
     size: def.size,
-    sideA, 
-    sideB,
+    blueSide: {
+      name: def.blueSide.name,
+      parties: blueSideParties,
+    },
+    pinkSide: {
+      name: def.pinkSide.name,
+      parties: pinkSideParties,
+    },
+    solutions: [],
   };
 };

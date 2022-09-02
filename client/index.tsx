@@ -15,7 +15,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/events/:eventId" element={<EventPage />} />
-          <Route path="/events/:eventId/party/:partyId" element={<PartyPage />} />
+          <Route path="/parties/:partyId" element={<PartyPage />} />
         </Routes>
       </BrowserRouter>
     </>

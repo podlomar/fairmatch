@@ -7,14 +7,15 @@ import PrefPanel from './components/PrefPanel';
 import './style.scss';
 
 interface PrefsListProps {
+  locked: boolean,
   prefs: PartyPref[];
 };
 
 const PrefsList = SortableContainer<PrefsListProps>(
-  ({ prefs }: PrefsListProps): JSX.Element => (
+  ({ locked, prefs }: PrefsListProps): JSX.Element => (
     <div>
       { prefs.map((pref, index) => (
-        <PrefPanel key={`item-${pref.index}`} index={index} name={pref.name} pos={index+1} />
+        <PrefPanel locked={locked} key={`item-${pref.index}`} index={index} name={pref.name} />
       ))}
     </div>
   )
@@ -22,11 +23,11 @@ const PrefsList = SortableContainer<PrefsListProps>(
 
 const PartyPage = () => {
   const [party, setParty] = useState<Party | 'loading'>('loading');
-  const { eventId, partyId } = useParams();
+  const { partyId } = useParams();
 
   useEffect(() => {
     (async () => setParty(
-      await (await fetch(`/api/event/${eventId}/party/${partyId}`)).json() as Party
+      await (await fetch(`/api/parties/${partyId}`)).json() as Party
     ))();
   }, []);
 
@@ -37,7 +38,23 @@ const PartyPage = () => {
 
     const prefs = arrayMove(party.prefs, oldIndex, newIndex);
     setParty({ ...party, prefs });
+    
+    fetch(`/api/parties/${partyId}/prefs`, { 
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(prefs),
+    });
   };
+
+  const handleFinalize = async () => {
+    setParty(
+      await (await fetch(`/api/parties/${partyId}/finalize`, { method: 'POST' })).json()
+    );
+  };
+
+  console.log(party);
 
   return (
     <main className="container-sm">
@@ -46,7 +63,12 @@ const PartyPage = () => {
       ) : (
         <>
           <p>{ party.name='' }</p>
-          <PrefsList prefs={party.prefs} onSortEnd={handleSortEnd} />
+          <PrefsList 
+            shouldCancelStart={() => party.status === 'finalized'}
+            prefs={party.prefs} onSortEnd={handleSortEnd}
+            locked={party.status === 'finalized'}
+          />
+          <button onClick={handleFinalize}>Finalize</button>
         </>
       )}
     </main>

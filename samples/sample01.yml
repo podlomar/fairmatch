@@ -1,0 +1,14 @@
+eventName: 'Kluci a holky'
+size: 3
+blueSide:
+  name: 'Kluci'
+  parties:
+    - 'Pavel'
+    - 'Ondra'
+    - 'Honza'
+pinkSide:
+  name: 'Holky'
+  parties:
+    - 'Jana'
+    - 'Eva'
+    - 'Zuzka'
